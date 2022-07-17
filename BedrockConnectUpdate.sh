@@ -3,6 +3,10 @@ URL=$(curl -fs -o/dev/null -w %{redirect_url} https://github.com/Pugmatt/Bedrock
 
 while read line; do file=$line; done < Bedrockversion.txt
 
+if [[ ! -f Bedrockversion.txt ]]
+then
+    touch Bedrockversion.txt
+fi 
 
 if [ "$URL" != $file ]; then
 	systemctl stop BedrockConnect.service
