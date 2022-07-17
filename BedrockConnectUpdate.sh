@@ -5,7 +5,7 @@ while read line; do file=$line; done < Bedrockversion.txt
 
 
 if [ "$URL" != $file ]; then
-    systemctl stop BedrockConnect.service
+	systemctl stop BedrockConnect.service
 	rm BedrockConnect-1.0-SNAPSHOT.jar
 	wget $URL/BedrockConnect-1.0-SNAPSHOT.jar
 	sudo systemctl start BedrockConnect.service
