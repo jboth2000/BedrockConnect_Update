@@ -1,25 +1,19 @@
-#!/bin/bash 
-
-#run this script in the location of the BedrockConnect-1.0-SNAPSHOT.jar file
-
-#checks for the latest url for the latest version of the .jar file
+#!/bin/bash
 URL=$(curl -fs -o/dev/null -w %{redirect_url} https://github.com/Pugmatt/BedrockConnect/releases/latest)
 
-#if missing Bedrockversion.txt, this will create the file
-if [[ ! -f Bedrockversion.txt ]]
-then
-	touch Bedrockversion.txt
-else
+test -z "$URL"  && exit 1;
 
-	#reads Bedrockversion.txt file into veriable #file
-	while read line; do file=$line; done < Bedrockversion.txt
+#test if file Bedrockversion.txt is missing, this will create the file with url loaction
+test ! -f Bedrockversion.txt && touch Bedrockversion.txt && echo "https://github.com/Pugmatt/BedrockConnect/releases/tag/old" > Bedrockversion.txt
 
-	#compares URLS for the curl and $file. If different, this will remove and download the latest version
-	if [ "$URL" != $file ]; then
-		systemctl stop BedrockConnect.service	#Comment out if you are not running the BedrockConnect as a service
-		rm BedrockConnect-1.0-SNAPSHOT.jar
-		wget $URL/BedrockConnect-1.0-SNAPSHOT.jar
-		systemctl start BedrockConnect.service   #Comment out if you are not running the BedrockConnect as a service
-		echo $URL > Bedrockversion.txt
-	fi
-fi 
+#reads Bedrockversion.txt file into veriable #file
+while read line; do file=$line; done < Bedrockversion.txt
+
+#compares URLS for the curl and $file. If different, this will remove and download the latest version
+if [ "$URL" != $file ]; then
+        systemctl stop BedrockConnect.service   #Comment out if you are not running the BedrockConnect as a service
+        rm BedrockConnect-1.0-SNAPSHOT.jar
+        wget $URL/BedrockConnect-1.0-SNAPSHOT.jar
+        systemctl start BedrockConnect.service   #Comment out if you are not running the BedrockConnect as a service
+        echo $URL > Bedrockversion.txt
+fi
